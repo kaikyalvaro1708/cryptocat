@@ -33,6 +33,7 @@ public class Main {
                 case 2 -> Methods.encryptMessage(scanner);
                 case 3 -> {
                     System.out.println("""
+                            ----------------------------------
                             Obrigado por participar! Até logo!
                              /\\_/\\ 
                             ( o.o )

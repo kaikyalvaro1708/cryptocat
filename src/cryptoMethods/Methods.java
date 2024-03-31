@@ -10,8 +10,7 @@ public class Methods {
                 -------------------------
                 Você deseja Decriptar em:
                 Cifra de César, Digite: 1
-                Código Morse, Digite: 2
-                """);
+                Código Morse, Digite: 2""");
 
         int userResponse = scanner.nextInt();
         scanner.nextLine();

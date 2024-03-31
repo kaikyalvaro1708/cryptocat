@@ -3,28 +3,31 @@ package cryptoMethods.cryptography;
 public class CaesarCipher {
     private int key; //variável da chave privada,
 
-    // Esta variável é privada para que somente os métodos dentro desta classe possam acessá-la diretamente.
-    // Isso ajuda a garantir a segurança dos dados.
-
-    //Construtor: Há um construtor público que recebe a chave como parâmetro e a atribui à variável 'key'.
+    // Construtor: Há um construtor público que recebe a chave como parâmetro e a atribui à variável 'key'.
     public CaesarCipher(int key) {
         this.key = key;
     }
 
+    // Método privado para processar a mensagem. Ele recebe uma mensagem e um deslocamento como parâmetros.
     private String processMessage(String message, int offset) {
-        StringBuilder result = new StringBuilder();
+        // Inicializa uma string vazia para armazenar o resultado da cifragem ou decifragem
+        String result = "";
+        // Itera sobre cada caractere na mensagem.
         for (char character : message.toCharArray()) {
-            if (Character.isLetter(character)) { // Verifica se o caractere é uma letra do alfabeto
+            // Verifica se o caractere é uma letra do alfabeto
+            if (Character.isLetter(character)) {
                 int originalAlphabetPosition = Character.toLowerCase(character) - 'a';
                 int newAlphabetPosition = (originalAlphabetPosition + offset) % 26;
-                if (newAlphabetPosition < 0) { // Lidar com valores negativos
+                // Lidar com valores negativos
+                if (newAlphabetPosition < 0) {
                     newAlphabetPosition += 26;
                 }
                 char newCharacter = (char) ('a' + newAlphabetPosition);
-                if (Character.isUpperCase(character)) { // Manter a capitalização original
-                    result.append(Character.toUpperCase(newCharacter));
+                // Manter a capitalização original
+                if (Character.isUpperCase(character)) {
+                    result += Character.toUpperCase(newCharacter);
                 } else {
-                    result.append(newCharacter);
+                    result += newCharacter;
                 }
             } else if (Character.isDigit(character)) { // Verifica se o caractere é um dígito
                 int originalDigit = character - '0';
@@ -32,17 +35,19 @@ public class CaesarCipher {
                 if (newDigit < 0) {
                     newDigit += 10;
                 }
-                result.append((char) ('0' + newDigit));
+                result += (char) ('0' + newDigit);
             }
             else {
-                result.append(character); // Mantém caracteres que não estão no alfabeto intactos
+                result += character; // Mantém caracteres que não estão no alfabeto intactos
             }
         }
-        return result.toString();
+        return result;
     }
 
+    // Método público para criptografar a mensagem. Ele chama o método processMessage com o deslocamento da chave.
     public String encryptMessage(String message) {return processMessage(message, key); }
 
+    // Método público para descriptografar a mensagem. Ele chama o método processMessage com o deslocamento inverso da chave.
     public String decryptMessage(String message) {return processMessage(message, -key);}
 
 }
