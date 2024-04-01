@@ -26,12 +26,15 @@ public class Main {
                     Sua resposta:
                     """);
 
-            userResponse = scanner.nextInt();
+            // Verifica se a próxima entrada é um número inteiro
+            if (scanner.hasNextInt()) {
+                userResponse = scanner.nextInt();
 
-            switch (userResponse) {
-                case 1 -> Methods.decryptMessage(scanner);
-                case 2 -> Methods.encryptMessage(scanner);
-                case 3 -> {
+                if (userResponse == 1) {
+                    Methods.decryptMessage(scanner);
+                } else if (userResponse == 2) {
+                    Methods.encryptMessage(scanner);
+                } else if (userResponse == 3) {
                     System.out.println("""
                             ----------------------------------
                             Obrigado por participar! Até logo!
@@ -40,9 +43,13 @@ public class Main {
                              > ^ <\
                             """);
                     userPlaying = false;
+                } else {
+                    System.out.println("Por favor, digite um número válido");
                 }
-                default -> System.out.println("Por favor, digite um número válido");
-
+            } else {
+                // Limpa o buffer do scanner e exibe uma mensagem de erro
+                System.out.println("Por favor, digite um número válido");
+                scanner.next(); // Limpa o buffer do scanner
             }
         }
     }
