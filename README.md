@@ -68,16 +68,15 @@ separados em "MorseCode" e "CaesarCipher", respectivamente.
 
 ## Arquivo Main.java
 ```Java
-import java.util.Scanner; // Importa a classe Scanner para entrada do usuário
-import cryptoMethods.Methods; // Importa os métodos de criptografia/descriptografia
+import java.util.Scanner;
+import cryptoMethods.Methods;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in); // Cria uma instância de Scanner para entrada do usuário
-        int userResponse; // Variável para armazenar a resposta do usuário
-        boolean userPlaying = true; // Variável para controlar se o usuário está jogando ou não
+        Scanner scanner = new Scanner(System.in);
+        int userResponse;
+        boolean userPlaying = true;
 
-        // Mensagem de boas-vindas
         System.out.println("""
                 --------------------------------
                 Olá, seja bem-vindo ao CryptoCat!
@@ -86,9 +85,7 @@ public class Main {
                         > ^ <\
                 """);
 
-        // Loop principal do programa
         while (userPlaying) {
-            // Menu de opções
             System.out.print("""
                     ----------------------------------
                     O que você deseja?
@@ -99,84 +96,92 @@ public class Main {
                     Sua resposta:
                     """);
 
-            // Entrada do usuário
-            userResponse = scanner.nextInt();
+            // Verifica se a próxima entrada é um número inteiro
+            if (scanner.hasNextInt()) {
+                userResponse = scanner.nextInt();
 
-            // Estrutura switch-case para escolha do usuário
-            switch (userResponse) {
-                // Caso o usuário queira descriptografar uma frase
-                case 1 -> Methods.decryptMessage(scanner);
-                // Caso o usuário queira criptografar uma frase
-                case 2 -> Methods.encryptMessage(scanner);
-                // Caso o usuário queira sair do programa
-                case 3 -> {
-                    // Mensagem de despedida
+                if (userResponse == 1) {
+                    Methods.decryptMessage(scanner);
+                } else if (userResponse == 2) {
+                    Methods.encryptMessage(scanner);
+                } else if (userResponse == 3) {
                     System.out.println("""
+                            ----------------------------------
                             Obrigado por participar! Até logo!
                              /\\_/\\ 
                             ( o.o )
                              > ^ <\
                             """);
-                    userPlaying = false; // Define userPlaying como falso para encerrar o loop
+                    userPlaying = false;
+                } else {
+                    System.out.println("Por favor, digite um número válido");
                 }
-                // Caso o usuário digite uma opção inválida
-                default -> System.out.println("Por favor, digite um número válido");
-
+            } else {
+                // Limpa o buffer do scanner e exibe uma mensagem de erro
+                System.out.println("Por favor, digite um número válido");
+                scanner.next(); // Limpa o buffer do scanner
             }
         }
     }
 }
 
 
+
 ```
-- Importações: Importa as classes Scanner para entrada de usuário e Methods para métodos de criptografia/descriptografia.
-- Classe Main: Declaração da classe principal do programa.
-- Método main: Ponto de entrada do programa.
-- Inicialização de variáveis: Cria instâncias de Scanner e variáveis para armazenar a resposta do usuário e controlar a continuação do jogo.
-- Mensagem de boas-vindas: Sauda o usuário quando o programa é iniciado.
-- Loop while: Mantém o programa em execução enquanto o usuário quiser continuar.
-- Menu de opções: Exibe as opções disponíveis para o usuário.
-- Entrada do usuário: Lê a resposta do usuário.
-- Switch-case: Executa a ação correspondente à escolha do usuário: descriptografar, criptografar ou sair do programa.
+- O código importa duas classes: Scanner para entrada do usuário e Methods para métodos de criptografia e descriptografia.
+- O método main é o ponto de entrada do programa.
+- O programa exibe uma saudação e um desenho de um gato ASCII.
+- Ele entra em um loop while enquanto o usuário estiver jogando.
+- Dentro do loop, exibe um menu de opções para o usuário: descriptografar uma frase (opção 1), criptografar uma frase (opção 2) ou sair do programa (opção 3).
+- Ele usa Scanner para ler a resposta do usuário e trata casos em que a entrada não é um número inteiro.
+- Com base na resposta do usuário, chama os métodos apropriados da classe Methods para descriptografar ou criptografar uma frase, ou sai do programa.
+- Se o usuário escolher sair do programa, uma mensagem de despedida é exibida antes de encerrar o loop.
+- O programa continua executando até que o usuário decida sair.
 
 ## Arquivo Methods.java
 ```Java
 package cryptoMethods;
 
-// Import statements
 import cryptoMethods.cryptography.CaesarCipher;
 import cryptoMethods.cryptography.MorseCode;
+
 import java.util.Scanner;
 
 public class Methods {
-
-    // Método para decriptar mensagem
     private static void decryptMessageInternal(Scanner scanner) {
-        // Menu para escolher o método de decriptação
         System.out.println("""
                 -------------------------
                 Você deseja Decriptar em:
                 Cifra de César, Digite: 1
                 Código Morse, Digite: 2""");
 
-        // Ler a escolha do usuário
-        int userResponse = scanner.nextInt();
-        scanner.nextLine();
+        int userResponse;
+        try {
+            userResponse = scanner.nextInt();
+            scanner.nextLine(); // Limpa o buffer do scanner
+        } catch (Exception e) {
+            System.out.println("Por favor, digite um número válido");
+            scanner.nextLine(); // Limpa o buffer do scanner
+            return;
+        }
 
-        // Executar decriptação com base na escolha do usuário
         switch (userResponse) {
             case 1 -> {
-                // Decriptação usando Cifra de César
                 System.out.println("Digite a frase que deseja Decriptar: ");
                 String message = scanner.nextLine();
                 System.out.println("Digite a chave da cifra de César: ");
-                int key = Integer.parseInt(scanner.nextLine());
-                CaesarCipher cipher = new CaesarCipher(key);
-                String messageDecrypt = cipher.decryptMessage(message);
-                System.out.println("Mensagem descriptografada: " + messageDecrypt);
+                try {
+                    int key = scanner.nextInt();
+                    scanner.nextLine(); // Limpa o buffer do scanner
+                    CaesarCipher cipher = new CaesarCipher(key);
+                    String messageDecrypt = cipher.decryptMessage(message);
+                    System.out.println("Mensagem descriptografada: " + messageDecrypt);
+                } catch (Exception e) {
+                    System.out.println("Por favor, digite um número válido como chave");
+                    scanner.nextLine(); // Limpa o buffer do scanner
+                }
             }
             case 2 -> {
-                // Decriptação usando Código Morse
                 System.out.println("Digite a frase que deseja Decriptar: ");
                 String message = scanner.nextLine();
                 String decryptedMessage = MorseCode.decrypt(message);
@@ -186,33 +191,40 @@ public class Methods {
         }
     }
 
-    // Método para encriptar mensagem
     private static void encryptMessageInternal(Scanner scanner) {
-        // Menu para escolher o método de encriptação
         System.out.println("""
                 -------------------------
                 Você deseja Encriptar em:
                 Cifra de César, Digite: 1
                 Código Morse, Digite: 2""");
 
-        // Ler a escolha do usuário
-        int userResponse = scanner.nextInt();
-        scanner.nextLine();
+        int userResponse;
+        try {
+            userResponse = scanner.nextInt();
+            scanner.nextLine(); // Limpa o buffer do scanner
+        } catch (Exception e) {
+            System.out.println("Por favor, digite um número válido");
+            scanner.nextLine(); // Limpa o buffer do scanner
+            return;
+        }
 
-        // Executar encriptação com base na escolha do usuário
         switch (userResponse) {
             case 1 -> {
-                // Encriptação usando Cifra de César
                 System.out.println("Digite a frase que deseja Encriptar: ");
                 String message = scanner.nextLine();
                 System.out.println("Digite a chave da cifra de César: ");
-                int key = Integer.parseInt(scanner.nextLine());
-                CaesarCipher cipher = new CaesarCipher(key);
-                String messageEncrypt = cipher.encryptMessage(message);
-                System.out.println("Mensagem criptografada: " + messageEncrypt);
+                try {
+                    int key = scanner.nextInt();
+                    scanner.nextLine(); // Limpa o buffer do scanner
+                    CaesarCipher cipher = new CaesarCipher(key);
+                    String messageEncrypt = cipher.encryptMessage(message);
+                    System.out.println("Mensagem criptografada: " + messageEncrypt);
+                } catch (Exception e) {
+                    System.out.println("Por favor, digite um número válido como chave");
+                    scanner.nextLine(); // Limpa o buffer do scanner
+                }
             }
             case 2 -> {
-                // Encriptação usando Código Morse
                 System.out.println("Digite a frase que deseja Encriptar: ");
                 String message = scanner.nextLine();
                 String encryptedMessage = MorseCode.encrypt(message);
@@ -222,12 +234,10 @@ public class Methods {
         }
     }
 
-    // Método público para decriptar mensagem
     public static void decryptMessage(Scanner scanner) {
         decryptMessageInternal(scanner);
     }
 
-    // Método público para encriptar mensagem
     public static void encryptMessage(Scanner scanner) {
         encryptMessageInternal(scanner);
     }
@@ -235,208 +245,200 @@ public class Methods {
 
 ```
 
-- O código está contido no pacote cryptoMethods.
-- Ele importa duas classes de criptografia: CaesarCipher e MorseCode.
-- Há a utilização da classe Scanner para entrada de dados pelo usuário.
-- Existe uma classe chamada Methods, que contém métodos para criptografar e descriptografar mensagens.
-- Os métodos decryptMessageInternal e encryptMessageInternal são métodos privados que realizam a descriptografia e a criptografia, respectivamente.
-- Ambos os métodos exibem um menu para o usuário escolher o método de criptografia ou descriptografia: Cifra de César ou Código Morse.
-- Os métodos realizam a operação correspondente com base na escolha do usuário.
-- O programa lida com entradas do usuário para as mensagens e, no caso da Cifra de César, para a chave de criptografia.
-- Existem métodos públicos decryptMessage e encryptMessage, que servem como ponto de entrada para o usuário iniciar o processo de criptografia ou descriptografia.
+- A classe Methods contém métodos estáticos para manipular as operações de criptografia e descriptografia.
+- Há métodos privados decryptMessageInternal e encryptMessageInternal, que lidam com a lógica específica de cada operação de descriptografia e criptografia, respectivamente.
+- Cada método interno exibe um menu para o usuário escolher o método de criptografia (Cifra de César ou Código Morse).
+- A entrada do usuário é validada e processada de acordo com a escolha feita.
+- Caso o usuário escolha a cifra de César, ele é solicitado a inserir a chave de deslocamento.
+- A entrada do usuário é validada e, se for bem-sucedida, a mensagem é criptografada ou descriptografada usando o método apropriado da classe CaesarCipher.
+- Se o usuário escolher o Código Morse, a mensagem é criptografada ou descriptografada usando os métodos da classe MorseCode.
+- Os métodos públicos decryptMessage e encryptMessage são fornecidos para facilitar o acesso às funcionalidades de criptografia e descriptografia.
 
 ## Arquivo CaesarCipher.java
 ```Java
 package cryptoMethods.cryptography;
 
 public class CaesarCipher {
-    private int chave; // Variável privada da chave,
+    private int key; //variável da chave privada,
 
-    // Esta variável é privada para que somente os métodos dentro desta classe possam acessá-la diretamente.
-    // Isso ajuda a garantir a segurança dos dados.
-
-    // Construtor: Existe um construtor público que recebe a chave como parâmetro e a atribui à variável 'chave'.
-    public CaesarCipher(int chave) {
-        this.chave = chave;
+    // Construtor: Há um construtor público que recebe a chave como parâmetro e a atribui à variável 'key'.
+    public CaesarCipher(int key) {
+        this.key = key;
     }
 
-    // Método privado para processar a mensagem com base no deslocamento fornecido
-    private String processarMensagem(String mensagem, int deslocamento) {
-        StringBuilder resultado = new StringBuilder();
-        for (char caractere : mensagem.toCharArray()) {
-            if (Character.isLetter(caractere)) { // Verifica se o caractere é uma letra do alfabeto
-                int posicaoAlfabetoOriginal = Character.toLowerCase(caractere) - 'a';
-                int novaPosicaoAlfabeto = (posicaoAlfabetoOriginal + deslocamento) % 26;
-                if (novaPosicaoAlfabeto < 0) { // Lidar com valores negativos
-                    novaPosicaoAlfabeto += 26;
+    // Método privado para processar a mensagem. Ele recebe uma mensagem e um deslocamento como parâmetros.
+    private String processMessage(String message, int offset) {
+        // Inicializa uma string vazia para armazenar o resultado da cifragem ou decifragem
+        String result = "";
+        // Itera sobre cada caractere na mensagem.
+        for (char character : message.toCharArray()) {
+            // Verifica se o caractere é uma letra do alfabeto
+            if (Character.isLetter(character)) {
+                int originalAlphabetPosition = Character.toLowerCase(character) - 'a';
+                int newAlphabetPosition = (originalAlphabetPosition + offset) % 26;
+                // Lidar com valores negativos
+                if (newAlphabetPosition < 0) {
+                    newAlphabetPosition += 26;
                 }
-                char novoCaractere = (char) ('a' + novaPosicaoAlfabeto);
-                if (Character.isUpperCase(caractere)) { // Manter a capitalização original
-                    resultado.append(Character.toUpperCase(novoCaractere));
+                char newCharacter = (char) ('a' + newAlphabetPosition);
+                // Manter a capitalização original
+                if (Character.isUpperCase(character)) {
+                    result += Character.toUpperCase(newCharacter);
                 } else {
-                    resultado.append(novoCaractere);
+                    result += newCharacter;
                 }
-            } else if (Character.isDigit(caractere)) { // Verifica se o caractere é um dígito
-                int digitoOriginal = caractere - '0';
-                int novoDigito = (digitoOriginal + deslocamento) % 10;
-                if (novoDigito < 0) {
-                    novoDigito += 10;
+            } else if (Character.isDigit(character)) { // Verifica se o caractere é um dígito
+                int originalDigit = character - '0';
+                int newDigit = (originalDigit + offset) % 10;
+                if (newDigit < 0) {
+                    newDigit += 10;
                 }
-                resultado.append((char) ('0' + novoDigito));
-            } else {
-                resultado.append(caractere); // Mantém caracteres que não estão no alfabeto intactos
+                result += (char) ('0' + newDigit);
+            }
+            else {
+                result += character; // Mantém caracteres que não estão no alfabeto intactos
             }
         }
-        return resultado.toString();
+        return result;
     }
 
-    // Método para criptografar a mensagem usando a Cifra de César
-    public String criptografarMensagem(String mensagem) {
-        return processarMensagem(mensagem, chave);
-    }
+    // Método público para criptografar a mensagem. Ele chama o método processMessage com o deslocamento da chave.
+    public String encryptMessage(String message) {return processMessage(message, key); }
 
-    // Método para descriptografar a mensagem usando a Cifra de César
-    public String descriptografarMensagem(String mensagem) {
-        return processarMensagem(mensagem, -chave);
-    }
+    // Método público para descriptografar a mensagem. Ele chama o método processMessage com o deslocamento inverso da chave.
+    public String decryptMessage(String message) {return processMessage(message, -key);}
+
 }
+
 
 ```
 
-### Variáveis de Instância:
-- chave: Armazena a chave de criptografia. É privada para garantir segurança dos dados.
-
-### Construtor:
-- CaesarCipher(int chave): Inicializa a classe com a chave de criptografia fornecida.
-
-### Métodos:
-- processarMensagem(String mensagem, int deslocamento): Método privado para processar a mensagem com base no deslocamento especificado.
-- criptografarMensagem(String mensagem): Criptografa a mensagem usando a cifra de César com a chave fornecida.
-- descriptografarMensagem(String mensagem): Descriptografa a mensagem usando a cifra de César com a chave fornecida.
-
-### Funcionalidades:
--- Criptografa e descriptografa mensagens de texto usando a cifra de César, mantendo a capitalização e caracteres não alfabéticos intactos.
--- Suporta criptografia de letras do alfabeto (maiúsculas e minúsculas) e dígitos.
-
+- A classe CaesarCipher, responsável pela cifra de César, é um método de criptografia simples que desloca os caracteres em uma quantidade fixa de posições no alfabeto.
+- Atributo key: Este atributo armazena a chave de deslocamento utilizada na cifra de César. É um valor inteiro que determina quantas posições no alfabeto os caracteres serão deslocados.
+- Construtor: O construtor público permite que um objeto CaesarCipher seja instanciado com uma chave específica. Isso permite que diferentes instâncias da classe usem chaves diferentes, fornecendo flexibilidade para criptografar e descriptografar mensagens com diferentes deslocamentos.
+- Método processMessage: Este método privado é responsável por processar a mensagem, aplicando o deslocamento aos caracteres de acordo com a chave fornecida. Ele itera sobre cada caractere da mensagem, verificando se é uma letra do alfabeto, um dígito ou outro caractere. Em seguida, aplica o deslocamento apropriado e constrói a mensagem resultante.
+- Método encryptMessage: Este método público recebe uma mensagem como entrada e a criptografa utilizando a cifra de César. Ele chama o método processMessage com o deslocamento da chave fornecida no construtor. Isso resulta na mensagem criptografada de acordo com a chave especificada.
+- Método decryptMessage: Similar ao método de criptografia, este método público recebe uma mensagem criptografada como entrada e a descriptografa utilizando a cifra de César. Ele chama - o método processMessage com o deslocamento inverso da chave fornecida no construtor. Isso restaura a mensagem original a partir da mensagem criptografada.
 ## Arquivo MorseCode.java
 ```Java
-  package cryptoMethods.cryptography;
+    package cryptoMethods.cryptography;
 
-import java.util.HashMap;
+    import java.util.HashMap;
 
-public class MorseCode {
+    public class MorseCode {
 
-    // Mapa para mapear caracteres do alfabeto para código Morse
-    private static final HashMap<Character, String> morseAlphabet = new HashMap<>();
-    // Mapa para mapear código Morse de volta para caracteres do alfabeto
-    private static final HashMap<String, Character> reverseMorseAlphabet = new HashMap<>();
+        private static final HashMap<Character, String> morseAlphabet = new HashMap<>();
+        //Mapeia caracteres do alfabeto para seus equivalentes em código morse
+        private static final HashMap<String, Character> reverseMorseAlphabet = new HashMap<>();
+        //Mapeia o código Morse de volta para caracteres do alfabeto
 
-    // Bloco de inicialização estática para preencher os mapas
-    static {
-        // Mapeamento de letras para código Morse
-        morseAlphabet.put('A', ".-");
-        morseAlphabet.put('B', "-...");
-        morseAlphabet.put('C', "-.-.");
-        morseAlphabet.put('D', "-..");
-        morseAlphabet.put('E', ".");
-        morseAlphabet.put('F', "..-.");
-        morseAlphabet.put('G', "--.");
-        morseAlphabet.put('H', "....");
-        morseAlphabet.put('I', "..");
-        morseAlphabet.put('J', ".---");
-        morseAlphabet.put('K', "-.-");
-        morseAlphabet.put('L', ".-..");
-        morseAlphabet.put('M', "--");
-        morseAlphabet.put('N', "-.");
-        morseAlphabet.put('O', "---");
-        morseAlphabet.put('P', ".--.");
-        morseAlphabet.put('Q', "--.-");
-        morseAlphabet.put('R', ".-.");
-        morseAlphabet.put('S', "...");
-        morseAlphabet.put('T', "-");
-        morseAlphabet.put('U', "..-");
-        morseAlphabet.put('V', "...-");
-        morseAlphabet.put('W', ".--");
-        morseAlphabet.put('X', "-..-");
-        morseAlphabet.put('Y', "-.--");
-        morseAlphabet.put('Z', "--..");
-        morseAlphabet.put('0', "-----");
-        morseAlphabet.put('1', ".----");
-        morseAlphabet.put('2', "..---");
-        morseAlphabet.put('3', "...--");
-        morseAlphabet.put('4', "....-");
-        morseAlphabet.put('5', ".....");
-        morseAlphabet.put('6', "-....");
-        morseAlphabet.put('7', "--...");
-        morseAlphabet.put('8', "---..");
-        morseAlphabet.put('9', "----.");
-        morseAlphabet.put('.', ".-.-.-");
-        morseAlphabet.put(',', "--..--");
-        morseAlphabet.put('?', "..--..");
-        morseAlphabet.put('!', "-.-.--");
+        // Bloco de inicialização estática para preencher os mapas
+        static {
+            // Mapeamento de letras para código Morse
+            morseAlphabet.put('A', ".-");
+            morseAlphabet.put('B', "-...");
+            morseAlphabet.put('C', "-.-.");
+            morseAlphabet.put('D', "-..");
+            morseAlphabet.put('E', ".");
+            morseAlphabet.put('F', "..-.");
+            morseAlphabet.put('G', "--.");
+            morseAlphabet.put('H', "....");
+            morseAlphabet.put('I', "..");
+            morseAlphabet.put('J', ".---");
+            morseAlphabet.put('K', "-.-");
+            morseAlphabet.put('L', ".-..");
+            morseAlphabet.put('M', "--");
+            morseAlphabet.put('N', "-.");
+            morseAlphabet.put('O', "---");
+            morseAlphabet.put('P', ".--.");
+            morseAlphabet.put('Q', "--.-");
+            morseAlphabet.put('R', ".-.");
+            morseAlphabet.put('S', "...");
+            morseAlphabet.put('T', "-");
+            morseAlphabet.put('U', "..-");
+            morseAlphabet.put('V', "...-");
+            morseAlphabet.put('W', ".--");
+            morseAlphabet.put('X', "-..-");
+            morseAlphabet.put('Y', "-.--");
+            morseAlphabet.put('Z', "--..");
+            morseAlphabet.put('0', "-----");
+            morseAlphabet.put('1', ".----");
+            morseAlphabet.put('2', "..---");
+            morseAlphabet.put('3', "...--");
+            morseAlphabet.put('4', "....-");
+            morseAlphabet.put('5', ".....");
+            morseAlphabet.put('6', "-....");
+            morseAlphabet.put('7', "--...");
+            morseAlphabet.put('8', "---..");
+            morseAlphabet.put('9', "----.");
+            morseAlphabet.put('.', ".-.-.-");
+            morseAlphabet.put(',', "--..--");
+            morseAlphabet.put('?', "..--..");
+            morseAlphabet.put('!', "-.-.--");
 
-        // Loop para inverter os mapeamentos e preencher o mapa reverseMorseAlphabet
-        for (char letter : morseAlphabet.keySet()) {
-            String morse = morseAlphabet.get(letter);
-            reverseMorseAlphabet.put(morse, letter);
-        }
-    }
-
-    // Método para criptografar uma mensagem em código Morse
-    public static String encrypt(String message) {
-        StringBuilder encryptedMessage = new StringBuilder();
-        // Itera sobre cada caractere da mensagem, convertendo-os para maiúsculas
-        for (char letter : message.toUpperCase().toCharArray()) {
-            if (morseAlphabet.containsKey(letter)) {
-                // Se o caractere estiver presente no mapa, adiciona seu código Morse à mensagem criptografada
-                encryptedMessage.append(morseAlphabet.get(letter)).append(" ");
-            } else if (letter == ' ') {
-                // Se for um espaço, adiciona "/" para separar as palavras na mensagem criptografada
-                encryptedMessage.append("/ ");
+            // Loop para inverter os mapeamentos e preencher o mapa reverseMorseAlphabet
+            for (char letter : morseAlphabet.keySet()) {
+                String morse = morseAlphabet.get(letter);
+                reverseMorseAlphabet.put(morse, letter);
             }
+            // Após o mapeamento das letras para código Morse, um loop é usado para inverter os mapeamentos,
+            // colocando o código Morse como chave e a letra como valor no mapa reverseMorseAlphabet.
         }
-        return encryptedMessage.toString();
-    }
 
-    // Método para descriptografar uma mensagem em código Morse
-    public static String decrypt(String morsecode) {
-        StringBuilder decryptedMessage = new StringBuilder();
-        // Divide a sequência de código Morse em palavras usando "/" como delimitador
-        String[] words = morsecode.split("/");
-        // Itera sobre cada palavra
-        for (String word : words) {
-            // Divide cada palavra em caracteres Morse individuais usando " " como delimitador
-            String[] letters = word.split(" ");
-            // Itera sobre cada caractere Morse
-            for (String morse : letters) {
-                if (reverseMorseAlphabet.containsKey(morse)) {
-                    // Se o código Morse estiver presente no mapa, adiciona o caractere correspondente à mensagem descriptografada
-                    decryptedMessage.append(reverseMorseAlphabet.get(morse));
+        // Método privado para criptografar uma mensagem em código Morse
+        private static String encryptCode(String message) {
+            // String para armazenar a mensagem criptografada
+            String encryptedMessage = "";
+            // Itera sobre cada caractere da mensagem, convertendo-os para maiúsculas
+            for (char letter : message.toUpperCase().toCharArray()){
+                if (morseAlphabet.containsKey(letter)) {
+                    // Se o caractere estiver presente no mapa, adiciona seu código Morse à mensagem criptografada
+                    encryptedMessage += morseAlphabet.get(letter) + " ";
+                } else if (letter == ' ' ) {
+                    // Se for um espaço, adiciona "/" para separar as palavras na mensagem criptografada
+                    encryptedMessage += ("/ ");
                 }
-                // Adiciona um espaço após cada caractere na mensagem descriptografada
-                decryptedMessage.append(" ");
             }
+            return encryptedMessage.trim();
+            // Remove espaços extras no final e retorna a mensagem criptografada
         }
-        return decryptedMessage.toString();
+
+        // Método privado para descriptografar uma mensagem em código Morse
+        private static String decryptCode(String morsecode) {
+            // String para armazenar a mensagem descriptografada
+            String decryptedMessage = "";
+            // Divide a sequência de código Morse em palavras usando "/" como delimitador
+            String[] words = morsecode.split("/");
+            //Início de um loop que itera sobre cada palavra.
+            for (String word : words) {
+                // Divide cada palavra em caracteres Morse individuais usando " " como delimitador
+                String[] letters = word.split(" ");
+                // Itera sobre cada caractere Morse
+                for (String morse : letters) {
+                    if (reverseMorseAlphabet.containsKey(morse)) {
+                        // Se o código Morse estiver presente no mapa, adiciona o caractere correspondente à mensagem descriptografada
+                        decryptedMessage += reverseMorseAlphabet.get(morse);
+                    }
+                    // Adiciona um espaço após cada caractere na mensagem descriptografada
+                    decryptedMessage += " ";
+                }
+
+            }
+            return decryptedMessage.trim();
+            // Remove espaços extras no final e retorna a mensagem descriptografada
+        }
+
+        // Método público para criptografar uma mensagem em código Morse
+        public static String encrypt(String morsecode) {return encryptCode(morsecode); }
+
+        // Método público para descriptografar uma mensagem em código Morse
+        public static String decrypt(String morsecode) {return decryptCode(morsecode);}
     }
-}
 
 ```
-### Declaração da classe MorseCode no pacote cryptoMethods.cryptography.
-### Declaração de dois mapas estáticos: morseAlphabet e reverseMorseAlphabet.
-### Inicialização estática dos mapas com mapeamentos de letras para código Morse e vice-versa.
-### Método estático encrypt para criptografar uma mensagem em código Morse:
-- Recebe uma String de entrada.
-- Itera sobre cada caractere da mensagem, convertendo-os para maiúsculas.
-- Verifica se o caractere está presente no mapa morseAlphabet.
-- Adiciona o código Morse correspondente à mensagem criptografada.
-- Adiciona "/" para separar as palavras na mensagem criptografada.
-- Retorna a mensagem criptografada como uma String.
-### Método estático decrypt para descriptografar uma mensagem em código Morse:
-- Recebe uma String de entrada contendo código Morse.
-- Divide a sequência de código Morse em palavras usando "/" como delimitador.
-- Divide cada palavra em caracteres Morse individuais usando " " como delimitador.
-- Verifica se o código Morse está presente no mapa reverseMorseAlphabet.
-- Adiciona o caractere correspondente à mensagem descriptografada.
-- Adiciona um espaço após cada caractere na mensagem descriptografada.
-- Retorna a mensagem descriptografada como uma String.
+- A classe MorseCode implementa a funcionalidade de criptografia e descriptografia de mensagens usando o código Morse.
+- HashMaps morseAlphabet e reverseMorseAlphabet: Esses mapas são usados para mapear caracteres do alfabeto para seus equivalentes em código Morse e vice-versa. O morseAlphabet mapeia caracteres para códigos Morse, enquanto o reverseMorseAlphabet mapeia códigos Morse de volta para caracteres do alfabeto.
+- Bloco de inicialização estática: Este bloco é executado uma vez quando a classe é carregada, preenchendo os mapas com os respectivos mapeamentos de caracteres para código Morse e vice-versa.
+- Método encryptCode: Este método privado recebe uma mensagem como entrada e a criptografa em código Morse. Ele itera sobre cada caractere da mensagem, convertendo-os para maiúsculas e verificando se estão presentes no mapa morseAlphabet. Se estiverem presentes, adiciona o código Morse correspondente à mensagem criptografada.
+- Método decryptCode: Este método privado recebe uma sequência de código Morse como entrada e a descriptografa, retornando a mensagem original. Ele divide a sequência de código Morse em palavras usando "/" como delimitador e, em seguida, divide cada palavra em caracteres Morse individuais. Em seguida, itera sobre cada caractere Morse, verificando se está presente no mapa reverseMorseAlphabet e adicionando o caractere correspondente à mensagem descriptografada.
+- Métodos encrypt e decrypt: Esses métodos públicos fornecem uma interface para criptografar e descriptografar mensagens em código Morse. Eles chamam os métodos encryptCode e decryptCode, respectivamente.
