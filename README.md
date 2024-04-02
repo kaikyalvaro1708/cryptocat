@@ -6,7 +6,7 @@
 | :----------------------: | :---: |
 | Kaiky Alvaro de Miranda  | 98118 |
 | Lucas Rodrigues da Silva | 98344 |
-| Lucas Pinheiro de França | 552202|
+| Juan Pinheiro de França  | 552202|
 
 ---
 
