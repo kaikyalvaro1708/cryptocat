@@ -1,11 +1,14 @@
 import java.util.Scanner;
-import cryptoMethods.Methods;
+
+import br.com.cryptography.cryptoMethods.Methods;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int userResponse;
         boolean userPlaying = true;
+
+        Methods methods = new Methods();
 
         System.out.println("""
                 --------------------------------
@@ -26,14 +29,13 @@ public class Main {
                     Sua resposta:
                     """);
 
-            // Verifica se a próxima entrada é um número inteiro
             if (scanner.hasNextInt()) {
                 userResponse = scanner.nextInt();
 
                 if (userResponse == 1) {
-                    Methods.decryptMessage(scanner);
+                    methods.decryptMessage(scanner);
                 } else if (userResponse == 2) {
-                    Methods.encryptMessage(scanner);
+                    methods.encryptMessage(scanner);
                 } else if (userResponse == 3) {
                     System.out.println("""
                             ----------------------------------
@@ -47,10 +49,10 @@ public class Main {
                     System.out.println("Por favor, digite um número válido");
                 }
             } else {
-                // Limpa o buffer do scanner e exibe uma mensagem de erro
                 System.out.println("Por favor, digite um número válido");
-                scanner.next(); // Limpa o buffer do scanner
+                scanner.next();
             }
         }
+        scanner.close();
     }
 }

@@ -1,12 +1,13 @@
-package cryptoMethods;
+package br.com.cryptography.cryptoMethods;
 
-import cryptoMethods.cryptography.CaesarCipher;
-import cryptoMethods.cryptography.MorseCode;
+import br.com.cryptography.cryptoMethods.cryptography.CaesarCipher;
+import br.com.cryptography.cryptoMethods.cryptography.MorseCode;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Methods {
-    private static void decryptMessageInternal(Scanner scanner) {
+    public void decryptMessage(Scanner scanner) {
         System.out.println("""
                 -------------------------
                 Você deseja Decriptar em:
@@ -14,12 +15,14 @@ public class Methods {
                 Código Morse, Digite: 2""");
 
         int userResponse;
+
         try {
             userResponse = scanner.nextInt();
-            scanner.nextLine(); // Limpa o buffer do scanner
-        } catch (Exception e) {
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
             System.out.println("Por favor, digite um número válido");
-            scanner.nextLine(); // Limpa o buffer do scanner
+            System.out.println(e.getMessage());
+            scanner.nextLine();
             return;
         }
 
@@ -34,9 +37,10 @@ public class Methods {
                     CaesarCipher cipher = new CaesarCipher(key);
                     String messageDecrypt = cipher.decryptMessage(message);
                     System.out.println("Mensagem descriptografada: " + messageDecrypt);
-                } catch (Exception e) {
+                } catch (InputMismatchException e) {
                     System.out.println("Por favor, digite um número válido como chave");
-                    scanner.nextLine(); // Limpa o buffer do scanner
+                    System.out.println("Valor retorna: " + e.getMessage());
+                    scanner.nextLine();
                 }
             }
             case 2 -> {
@@ -49,7 +53,7 @@ public class Methods {
         }
     }
 
-    private static void encryptMessageInternal(Scanner scanner) {
+    public void encryptMessage(Scanner scanner) {
         System.out.println("""
                 -------------------------
                 Você deseja Encriptar em:
@@ -59,10 +63,10 @@ public class Methods {
         int userResponse;
         try {
             userResponse = scanner.nextInt();
-            scanner.nextLine(); // Limpa o buffer do scanner
-        } catch (Exception e) {
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
             System.out.println("Por favor, digite um número válido");
-            scanner.nextLine(); // Limpa o buffer do scanner
+            scanner.nextLine();
             return;
         }
 
@@ -73,13 +77,14 @@ public class Methods {
                 System.out.println("Digite a chave da cifra de César: ");
                 try {
                     int key = scanner.nextInt();
-                    scanner.nextLine(); // Limpa o buffer do scanner
+                    scanner.nextLine();
                     CaesarCipher cipher = new CaesarCipher(key);
                     String messageEncrypt = cipher.encryptMessage(message);
                     System.out.println("Mensagem criptografada: " + messageEncrypt);
-                } catch (Exception e) {
+                } catch (InputMismatchException e) {
                     System.out.println("Por favor, digite um número válido como chave");
-                    scanner.nextLine(); // Limpa o buffer do scanner
+                    System.out.println("Valor retorna: " + e.getMessage());
+                    scanner.nextLine();
                 }
             }
             case 2 -> {
@@ -90,13 +95,5 @@ public class Methods {
             }
             default -> System.out.println("Por favor, digite um número válido");
         }
-    }
-
-    public static void decryptMessage(Scanner scanner) {
-        decryptMessageInternal(scanner);
-    }
-
-    public static void encryptMessage(Scanner scanner) {
-        encryptMessageInternal(scanner);
     }
 }
