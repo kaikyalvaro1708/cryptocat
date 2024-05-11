@@ -1,17 +1,13 @@
-    package cryptoMethods.cryptography;
+    package br.com.cryptography.cryptoMethods.cryptography;
 
     import java.util.HashMap;
 
     public class MorseCode {
 
         private static final HashMap<Character, String> morseAlphabet = new HashMap<>();
-        //Mapeia caracteres do alfabeto para seus equivalentes em código morse
         private static final HashMap<String, Character> reverseMorseAlphabet = new HashMap<>();
-        //Mapeia o código Morse de volta para caracteres do alfabeto
 
-        // Bloco de inicialização estática para preencher os mapas
         static {
-            // Mapeamento de letras para código Morse
             morseAlphabet.put('A', ".-");
             morseAlphabet.put('B', "-...");
             morseAlphabet.put('C', "-.-.");
@@ -53,61 +49,42 @@
             morseAlphabet.put('?', "..--..");
             morseAlphabet.put('!', "-.-.--");
 
-            // Loop para inverter os mapeamentos e preencher o mapa reverseMorseAlphabet
             for (char letter : morseAlphabet.keySet()) {
                 String morse = morseAlphabet.get(letter);
                 reverseMorseAlphabet.put(morse, letter);
             }
-            // Após o mapeamento das letras para código Morse, um loop é usado para inverter os mapeamentos,
-            // colocando o código Morse como chave e a letra como valor no mapa reverseMorseAlphabet.
         }
 
-        // Método privado para criptografar uma mensagem em código Morse
         private static String encryptCode(String message) {
-            // String para armazenar a mensagem criptografada
-            String encryptedMessage = "";
-            // Itera sobre cada caractere da mensagem, convertendo-os para maiúsculas
+            StringBuilder encrytedMessage = new StringBuilder();
             for (char letter : message.toUpperCase().toCharArray()){
                 if (morseAlphabet.containsKey(letter)) {
-                    // Se o caractere estiver presente no mapa, adiciona seu código Morse à mensagem criptografada
-                    encryptedMessage += morseAlphabet.get(letter) + " ";
+                    encrytedMessage.append(morseAlphabet.get(letter) + " ");
                 } else if (letter == ' ' ) {
-                    // Se for um espaço, adiciona "/" para separar as palavras na mensagem criptografada
-                    encryptedMessage += ("/ ");
+                    encrytedMessage.append("/ ");
+                } else if (!morseAlphabet.containsKey(letter)) {
+                   throw new IllegalArgumentException("Caractere inválido para o código morse: " + letter);
                 }
             }
-            return encryptedMessage.trim();
-            // Remove espaços extras no final e retorna a mensagem criptografada
+            return encrytedMessage.toString().trim();
         }
 
-        // Método privado para descriptografar uma mensagem em código Morse
         private static String decryptCode(String morsecode) {
-            // String para armazenar a mensagem descriptografada
-            String decryptedMessage = "";
-            // Divide a sequência de código Morse em palavras usando "/" como delimitador
+            StringBuilder decryptedMessage = new StringBuilder();
             String[] words = morsecode.split("/");
-            //Início de um loop que itera sobre cada palavra.
             for (String word : words) {
-                // Divide cada palavra em caracteres Morse individuais usando " " como delimitador
                 String[] letters = word.split(" ");
-                // Itera sobre cada caractere Morse
                 for (String morse : letters) {
                     if (reverseMorseAlphabet.containsKey(morse)) {
-                        // Se o código Morse estiver presente no mapa, adiciona o caractere correspondente à mensagem descriptografada
-                        decryptedMessage += reverseMorseAlphabet.get(morse);
+                        decryptedMessage.append(reverseMorseAlphabet.get(morse));
                     }
-                    // Adiciona um espaço após cada caractere na mensagem descriptografada
-                    decryptedMessage += " ";
+                    decryptedMessage.append(" ");
                 }
-
             }
-            return decryptedMessage.trim();
-            // Remove espaços extras no final e retorna a mensagem descriptografada
+            return decryptedMessage.toString().trim();
         }
 
-        // Método público para criptografar uma mensagem em código Morse
-        public static String encrypt(String morsecode) {return encryptCode(morsecode); }
+        public static String encrypt(String morsecode) {return encryptCode(morsecode);}
 
-        // Método público para descriptografar uma mensagem em código Morse
         public static String decrypt(String morsecode) {return decryptCode(morsecode);}
     }
